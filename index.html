@@ -7,72 +7,80 @@
 
 <style>
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
 body{
-    background:#f5f5f5;
-    font-family:sans-serif;
-    text-align:center;
+    background:#f5f5f5;
+    font-family:sans-serif;
+    text-align:center;
 }
 
 h1{
-    margin-top:20px;
+    margin-top:20px;
 }
 
 #gameInfo{
-    display:flex;
-    justify-content:center;
-    gap:30px;
-    margin:20px;
-    font-size:22px;
-    font-weight:bold;
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    margin:20px;
+    font-size:22px;
+    font-weight:bold;
 }
 
 #character{
-    width:300px;
-    height:300px;
-    margin:20px auto;
-    background:white;
-    border-radius:20px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:150px;
-    cursor:pointer;
-    user-select:none;
-    transition:0.2s;
-    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+    width:300px;
+    height:300px;
+    margin:20px auto;
+    background:white;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 20px; /* 이미지 주변 여백 */
+    cursor:pointer;
+    user-select:none;
+    transition:0.2s;
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+    overflow: hidden; /* 이미지가 상자 밖으로 나가지 않도록 방지 */
 }
 
 #character:active{
-    transform:scale(0.95);
+    transform:scale(0.95);
+}
+
+/* 캐릭터 박스 내부 이미지 스타일 */
+#character img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* 이미지 비율 유지하며 쏙 들어가게 조절 */
 }
 
 #message{
-    font-size:32px;
-    font-weight:bold;
-    margin:20px;
+    font-size:32px;
+    font-weight:bold;
+    margin:20px;
 }
 
 button{
-    padding:12px 30px;
-    font-size:18px;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    background:#2e7d32;
-    color:white;
+    padding:12px 30px;
+    font-size:18px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    background:#2e7d32;
+    color:white;
 }
 
 .success{
-    color:green;
+    color:green;
 }
 
 .fail{
-    color:red;
+    color:red;
 }
 </style>
 </head>
@@ -82,11 +90,13 @@ button{
 <h1>🌾 미실란 성장 게임 🌾</h1>
 
 <div id="gameInfo">
-    <div>⏰ 남은 시간: <span id="time">60</span>초</div>
-    <div>👆 터치 수: <span id="count">0</span></div>
+    <div>⏰ 남은 시간: <span id="time">60</span>초</div>
+    <div>👆 터치 수: <span id="count">0</span></div>
 </div>
 
-<div id="character">🌾</div>
+<div id="character">
+    <img src="img/Stage1.png.png" alt="1단계">
+</div>
 
 <div id="message">캐릭터를 빠르게 터치하세요!</div>
 
@@ -103,79 +113,78 @@ const timeText = document.getElementById("time");
 const character = document.getElementById("character");
 const message = document.getElementById("message");
 
+// 총 5단계 이미지에 맞춰 구간을 20단위로 깔끔하게 재조정했습니다.
 function updateCharacter(){
 
-    if(count < 10){
-        character.innerHTML = "🌾";
-    }
-    else if(count < 30){
-        character.innerHTML = "🌱";
-    }
-    else if(count < 60){
-        character.innerHTML = "🌿";
-    }
-    else if(count < 100){
-        character.innerHTML = "🌾✨";
-    }
-    else{
-        character.innerHTML = "👑";
-    }
+    if(count < 20){
+        character.innerHTML = `<img src="img/Stage1.png.png" alt="1단계">`;
+    }
+    else if(count < 40){
+        character.innerHTML = `<img src="img/Stage2.png.png" alt="2단계">`;
+    }
+    else if(count < 60){
+        character.innerHTML = `<img src="img/Stage3.png.png" alt="3단계">`;
+    }
+    else if(count < 80){
+        character.innerHTML = `<img src="img/Stage4.png.png" alt="4단계">`;
+    }
+    else{
+        character.innerHTML = `<img src="img/Stage5.png.png" alt="최종단계">`;
+    }
 
 }
 
 character.addEventListener("click", ()=>{
 
-    if(gameOver) return;
+    if(gameOver) return;
 
-    count++;
-    countText.textContent = count;
+    count++;
+    countText.textContent = count;
 
-    updateCharacter();
+    updateCharacter();
 
-    if(count >= 100){
-        gameOver = true;
+    // 100번 터치 시 성공
+    if(count >= 100){
+        gameOver = true;
 
-        message.textContent =
-        "🎉 게임 성공! 미실란 마스터 달성!";
-        message.className = "success";
-    }
+        message.textContent = "🎉 게임 성공! 미실란 마스터 달성!";
+        message.className = "success";
+    }
 
 });
 
 const timer = setInterval(()=>{
 
-    if(gameOver) return;
+    if(gameOver) return;
 
-    timeLeft--;
-    timeText.textContent = timeLeft;
+    timeLeft--;
+    timeText.textContent = timeLeft;
 
-    if(timeLeft <= 0){
+    if(timeLeft <= 0){
 
-        gameOver = true;
+        gameOver = true;
 
-        message.textContent =
-        "💀 게임 오버! 시간 초과!";
-        message.className = "fail";
+        message.textContent = "💀 게임 오버! 시간 초과!";
+        message.className = "fail";
 
-    }
+    }
 
 },1000);
 
 function restartGame(){
 
-    count = 0;
-    timeLeft = 60;
-    gameOver = false;
+    count = 0;
+    timeLeft = 60;
+    gameOver = false;
 
-    countText.textContent = 0;
-    timeText.textContent = 60;
+    countText.textContent = 0;
+    timeText.textContent = 60;
 
-    character.innerHTML = "🌾";
+    // 다시 시작할 때도 1단계 이미지로 변경
+    character.innerHTML = `<img src="img/Stage1.png.png" alt="1단계">`;
 
-    message.textContent =
-    "캐릭터를 빠르게 터치하세요!";
-
-    message.className = "";
+    message.textContent = "캐릭터를 빠르게 터치하세요!";
+    message.className = "";
 
 }
 
