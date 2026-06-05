@@ -172,9 +172,10 @@ button:hover{
     <div id="footer">
         <div id="message">🔥 Cơ hội đây rồi! Hãy bấm thật nhanh liên tục!</div>
         
+        <!-- QR 및 쇼피 공식 미실란 상점 링크 영역 -->
         <div id="resultArea">
             <img class="qr-code" src="image/shopeeQR.png.png" alt="Mã QR Shopee">
-            <a class="shopee-link" href="https://shopee.vn" target="_blank">🛒 Khám phá Misillan trên Shopee</a>
+            <a class="shopee-link" href="https://shopee.vn/webmastersc.vn?categoryId=100629&entryPoint=ShopByPDP&itemId=48711441822&upstream=search" target="_blank">🛒 Khám phá Misillan trên Shopee</a>
         </div>
 
         <button id="restartBtn" onclick="restartGame()">Chơi lại</button>
@@ -184,7 +185,7 @@ button:hover{
 
 <script>
 let count = 0;
-let timeLeft = 10; // 시간을 10초로 변경
+let timeLeft = 10;
 let gameOver = false;
 let timerInterval = null;
 
@@ -273,7 +274,7 @@ function endGame(isSuccess) {
 
 function restartGame(){
     count = 0;
-    timeLeft = 10; // 재시작 시에도 10초로 초기화
+    timeLeft = 10;
     gameOver = false;
 
     countText.textContent = 0;
