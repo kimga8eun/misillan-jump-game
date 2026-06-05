@@ -6,101 +6,177 @@
 <title>미실란 성장 게임</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-body{
-    background:#f5f5f5;
-    font-family:sans-serif;
-    text-align:center;
+body {
+    background: #f5f5f5;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
-h1{
-    margin-top:20px;
+/* 기획안의 세로형 게임 스크린 틀 */
+#gameContainer {
+    width: 450px;
+    height: 750px;
+    background: #64b5f6; /* 기획안의 상/하단 파란색 배경 */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
 }
 
-#gameInfo{
-    display:flex;
-    justify-content:center;
-    gap:30px;
-    margin:20px;
-    font-size:22px;
-    font-weight:bold;
+/* 상단 정보 영역 */
+#headerArea {
+    padding: 15px 10px;
+    text-align: center;
+    background: #64b5f6;
 }
 
-#character{
-    width:300px;
-    height:300px;
-    margin:20px auto;
-    background:white;
-    border-radius:20px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding: 20px; /* 이미지 주변 여백 */
-    cursor:pointer;
-    user-select:none;
-    transition:0.2s;
-    box-shadow:0 4px 10px rgba(0,0,0,0.15);
-    overflow: hidden; /* 이미지가 상자 밖으로 나가지 않도록 방지 */
+#headerArea h1 {
+    font-size: 26px;
+    color: #333;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
 }
 
-#character:active{
-    transform:scale(0.95);
+/* 미실란 로고 배치 (기획안 좌측 상단) */
+.logo {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 50px;
+    height: 50px;
+    background: white;
+    border-radius: 8px;
+    padding: 3px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* 캐릭터 박스 내부 이미지 스타일 */
+#gameInfo {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 6px 15px;
+    border-radius: 20px;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+/* 중앙 게임 플레이 영역 (배경 이미지가 들어가는 곳) */
+#mainBackground {
+    flex: 1;
+    background-color: #f57c00; /* 초기 주황색 배경 */
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s ease;
+}
+
+/* 중앙 캐릭터 상자 (stage) */
+#character {
+    width: 220px;
+    height: 220px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s, background-color 0.3s;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+#character:active {
+    transform: scale(0.95);
+}
+
 #character img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* 이미지 비율 유지하며 쏙 들어가게 조절 */
+    object-fit: contain;
 }
 
-#message{
-    font-size:32px;
-    font-weight:bold;
-    margin:20px;
+/* 하단 컨트롤 영역 */
+#footerArea {
+    padding: 20px 10px;
+    text-align: center;
+    background: #64b5f6;
 }
 
-button{
-    padding:12px 30px;
-    font-size:18px;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    background:#2e7d32;
-    color:white;
+#message {
+    font-size: 24px;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 15px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 8px;
+    border-radius: 10px;
 }
 
-.success{
-    color:green;
+button {
+    padding: 10px 25px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #2e7d32;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
 }
 
-.fail{
-    color:red;
+button:active {
+    transform: scale(0.98);
 }
+
+.success { color: green; }
+.fail { color: red; }
 </style>
 </head>
 
 <body>
 
-<h1>🌾 미실란 성장 게임 🌾</h1>
+<div id="gameContainer">
+    <div class="logo">🌾</div>
 
-<div id="gameInfo">
-    <div>⏰ 남은 시간: <span id="time">60</span>초</div>
-    <div>👆 터치 수: <span id="count">0</span></div>
+    <div id="headerArea">
+        <h1>🌾 미실란 성장 게임 🌾</h1>
+        <div id="gameInfo">
+            <div>⏰ <span id="time">60</span>초</div>
+            <div>👆 <span id="count">0</span></div>
+        </div>
+    </div>
+
+    <div id="mainBackground">
+        <div id="character">
+            <img src="img/stage1.png.png" alt="1단계">
+        </div>
+    </div>
+
+    <div id="footerArea">
+        <div id="message">캐릭터를 빠르게 터치하세요!</div>
+        <button onclick="restartGame()">다시하기</button>
+    </div>
 </div>
-
-<div id="character">
-    <img src="img/Stage1.png.png" alt="1단계">
-</div>
-
-<div id="message">캐릭터를 빠르게 터치하세요!</div>
-
-<button onclick="restartGame()">다시하기</button>
 
 <script>
 
@@ -111,24 +187,35 @@ let gameOver = false;
 const countText = document.getElementById("count");
 const timeText = document.getElementById("time");
 const character = document.getElementById("character");
+const mainBackground = document.getElementById("mainBackground");
 const message = document.getElementById("message");
 
-// 총 5단계 이미지에 맞춰 구간을 20단위로 깔끔하게 재조정했습니다.
-function updateCharacter(){
+// 페이지 로드 시 첫 번째 배경화면 적용
+window.onload = () => {
+    updateStage();
+};
+
+// 캐릭터와 배경을 한 번에 업데이트하는 함수
+function updateStage(){
 
     if(count < 20){
+        mainBackground.style.backgroundImage = "url('img/background1.png.png')";
         character.innerHTML = `<img src="img/stage1.png.png" alt="1단계">`;
     }
     else if(count < 40){
+        mainBackground.style.backgroundImage = "url('img/background2.png.png')";
         character.innerHTML = `<img src="img/stage2.png.png" alt="2단계">`;
     }
     else if(count < 60){
+        mainBackground.style.backgroundImage = "url('img/background3.png.png')";
         character.innerHTML = `<img src="img/stage3.png.png" alt="3단계">`;
     }
     else if(count < 80){
+        mainBackground.style.backgroundImage = "url('img/background4.png.png')";
         character.innerHTML = `<img src="img/stage4.png.png" alt="4단계">`;
     }
     else{
+        mainBackground.style.backgroundImage = "url('img/background5.png.png')";
         character.innerHTML = `<img src="img/stage5.png.png" alt="최종단계">`;
     }
 
@@ -141,13 +228,11 @@ character.addEventListener("click", ()=>{
     count++;
     countText.textContent = count;
 
-    updateCharacter();
+    updateStage();
 
-    // 100번 터치 시 성공
     if(count >= 100){
         gameOver = true;
-
-        message.textContent = "🎉 게임 성공! 미실란 마스터 달성!";
+        message.textContent = "🎉 미실란 마스터 달성!";
         message.className = "success";
     }
 
@@ -161,12 +246,9 @@ const timer = setInterval(()=>{
     timeText.textContent = timeLeft;
 
     if(timeLeft <= 0){
-
         gameOver = true;
-
-        message.textContent = "💀 게임 오버! 시간 초과!";
+        message.textContent = "💀 시간 초과! 게임 오버!";
         message.className = "fail";
-
     }
 
 },1000);
@@ -180,8 +262,7 @@ function restartGame(){
     countText.textContent = 0;
     timeText.textContent = 60;
 
-    // 다시 시작할 때도 1단계 이미지로 변경
-    character.innerHTML = `<img src="img/Stage1.png.png" alt="1단계">`;
+    updateStage();
 
     message.textContent = "캐릭터를 빠르게 터치하세요!";
     message.className = "";
