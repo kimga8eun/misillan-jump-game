@@ -21,11 +21,11 @@ body {
     min-height: 100vh;
 }
 
-/* 전체 세로형 게임 스크린 틀 */
+/* 1. 전체 세로형 게임 스크린 틀 (상/하단 파란색 배경 고정) */
 #gameContainer {
     width: 450px;
     height: 750px;
-    background: #5aa2dc; /* 상/하단 파란색(하늘색) */
+    background: #5aa2dc; /* 기획안의 상/하단 파란색(하늘색) */
     display: flex;
     flex-direction: column;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
@@ -34,20 +34,20 @@ body {
     position: relative;
 }
 
-/* 상단 정보 영역 */
+/* 2. 상단 정보 영역 (로고와 타이틀이 들어가는 흰색 박스 포함) */
 #headerArea {
     padding: 20px 15px;
     text-align: center;
     position: relative;
 }
 
-/* 상단 흰색 컨텐츠 박스 */
+/* 실제 기획안의 상단 흰색 컨텐츠 박스 */
 .header-content-box {
     background: white;
     padding: 10px;
     border-radius: 5px;
-    border: 1px dashed #999;
-    margin-left: 60px;
+    border: 1px dashed #999; /* 기획안 느낌의 점선 */
+    margin-left: 60px; /* 로고가 들어갈 자리를 비워둠 */
 }
 
 .header-content-box h1 {
@@ -82,10 +82,10 @@ body {
     object-fit: contain;
 }
 
-/* 중앙 게임 플레이 영역 */
+/* 3. 중앙 게임 플레이 영역 (주황색 바탕 + 배경 이미지가 바뀌는 곳) */
 #mainBackground {
     flex: 1;
-    background-color: #e67e22; /* 주황색 기본 바탕 */
+    background-color: #e67e22; /* 기획안의 주황색 기본 바탕 */
     background-size: cover;
     background-position: center;
     display: flex;
@@ -96,27 +96,26 @@ body {
     border-bottom: 2px solid #333;
 }
 
-/* Background 글자 표시 */
+/* 기획안의 'Background' 글자 표시 (디자인용) */
 .bg-label {
     position: absolute;
-    bottom: 15px;
+    bottom: 20px;
     color: #333;
     font-weight: bold;
     font-size: 14px;
 }
 
-/* ⭐ [수정] 중앙 캐릭터 상자 (stage 크기 확대) ⭐ */
+/* 4. 중앙 캐릭터 상자 (기획안의 파란색 stage 박스) */
 #character {
-    width: 260px;  /* 기존 180px -> 260px로 확대 */
-    height: 260px; /* 기존 180px -> 260px로 확대 */
-    background: #5aa2dc; /* 스테이지 파란색 배경 */
-    border: 3px solid #333; /* 테두리 조금 더 선명하게 */
-    border-radius: 10px;
+    width: 240px;
+    height: 240px;
+    background: #5aa2dc; /* 기획안의 스테이지 파란색 배경 */
+    border: 2px solid #333;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 15px;
+    padding: 10px;
     cursor: pointer;
     user-select: none;
     transition: transform 0.1s;
@@ -128,19 +127,19 @@ body {
 
 #character img {
     width: 90%;
-    height: 85%;
+    height: 90%;
     object-fit: contain;
 }
 
-/* 캐릭터 상자 안의 'stage' 글자 크기 업 */
+/* 기획안 캐릭터 상자 안의 'stage' 글자 */
 .stage-label {
-    font-size: 16px;
+    font-size: 14px;
     color: white;
     font-weight: bold;
-    margin-top: 5px;
+    margin-top: 2px;
 }
 
-/* 하단 안내 및 컨트롤 영역 */
+/* 5. 하단 안내 및 컨트롤 영역 */
 #footerArea {
     padding: 20px 15px;
     text-align: center;
@@ -287,6 +286,7 @@ const timer = setInterval(()=>{
 
 },1000);
 
+document.get
 function restartGame(){
 
     count = 0;
