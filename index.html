@@ -25,7 +25,7 @@ body{
 
 #gameContainer{
     width:430px;
-    height:800px;
+    height:900px;
     background:white;
     border-radius:25px;
     overflow:hidden;
@@ -53,30 +53,46 @@ body{
 }
 
 #mainBackground{
-    height:560px;
+    height:650px;
+
     background-size:cover;
     background-position:center;
+    background-repeat:no-repeat;
+
     display:flex;
     justify-content:center;
-    align-items:center;
+    align-items:flex-end;
+
+    padding-bottom:15px;
+
     position:relative;
 }
 
 #character{
-    width:220px;
-    height:220px;
+    width:400px;
+    height:400px;
+
     cursor:pointer;
-    transition:.1s;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    transition:0.08s;
 }
 
 #character:active{
-    transform:scale(.92);
+    transform:scale(0.85);
 }
 
 #character img{
     width:100%;
     height:100%;
     object-fit:contain;
+
+    filter:drop-shadow(
+        0 10px 15px rgba(0,0,0,.25)
+    );
 }
 
 #footer{
@@ -85,7 +101,7 @@ body{
 }
 
 #message{
-    font-size:28px;
+    font-size:26px;
     font-weight:bold;
     margin-bottom:20px;
 }
@@ -98,6 +114,10 @@ button{
     color:white;
     font-size:18px;
     cursor:pointer;
+}
+
+button:hover{
+    opacity:.9;
 }
 
 .success{
@@ -125,9 +145,7 @@ button{
     </div>
 
     <div id="mainBackground">
-
         <div id="character"></div>
-
     </div>
 
     <div id="footer">
@@ -200,6 +218,16 @@ character.addEventListener("click", ()=>{
 
     if(gameOver) return;
 
+    character.animate(
+    [
+        {transform:"scale(1)"},
+        {transform:"scale(1.1)"},
+        {transform:"scale(1)"}
+    ],
+    {
+        duration:100
+    });
+
     count++;
 
     countText.textContent = count;
@@ -211,10 +239,10 @@ character.addEventListener("click", ()=>{
         gameOver = true;
 
         message.textContent =
-            "🎉 베트남 진출 성공!";
+        "🎉 베트남 진출 성공!";
 
         message.className =
-            "success";
+        "success";
 
     }
 
@@ -234,10 +262,10 @@ setInterval(()=>{
         gameOver = true;
 
         message.textContent =
-            "💀 게임 오버!";
+        "💀 시간 초과! 게임 오버!";
 
         message.className =
-            "fail";
+        "fail";
 
     }
 
@@ -253,7 +281,7 @@ function restartGame(){
     timeText.textContent = 60;
 
     message.textContent =
-        "🔥 지금입니다! 마구 연타하세요!";
+    "🔥 지금입니다! 마구 연타하세요!";
 
     message.className = "";
 
