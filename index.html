@@ -1,358 +1,212 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>미실란 성장 점프</title>
-
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    overflow:hidden;
-    background:#87CEEB;
-    font-family:Arial, sans-serif;
-}
-
-canvas{
-    display:block;
-    margin:auto;
-    background:linear-gradient(#87CEEB,#EAF9FF);
-}
-
-#ui{
-    position:absolute;
-    top:10px;
-    left:10px;
-    color:white;
-    font-size:20px;
-    font-weight:bold;
-    text-shadow:2px 2px 4px rgba(0,0,0,0.5);
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SAEON 발아현미 영양 폭발 대작전!</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .char-container {
+            width: 230px;
+            height: 230px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 50%;
+            position: relative;
+        }
+        .pop-effect { animation: pop 0.08s ease-in-out; }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+        /* 사방으로 뿜어져 나오는 영양소 텍스트 애니메이션 */
+        .nutrient-text {
+            position: absolute;
+            font-weight: 900;
+            font-size: 14px;
+            pointer-events: none;
+            animation: floatUp 0.6s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% { transform: translate(0, 0) scale(0.5); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(1.2); opacity: 0; }
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gradient-to-br from-stone-50 to-amber-100 min-h-screen flex items-center justify-center p-4 font-sans select-none touch-manipulation">
 
-<div id="ui">
-    <div id="score">점수 : 0</div>
-    <div id="stage">🌱 씨앗</div>
-</div>
+    <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-amber-200/60 p-6 flex flex-col justify-between min-h-[600px] relative overflow-hidden">
+        
+        <!-- 1. 타이머 및 활성화 게이지 -->
+        <div class="flex justify-between items-center bg-stone-50 p-3 rounded-2xl border border-stone-100">
+            <div class="text-left">
+                <span class="text-[10px] text-stone-400 font-bold block uppercase tracking-wider">발아 제한 시간</span>
+                <span id="timer" class="text-2xl font-black text-red-500">60.00초</span>
+            </div>
+            <div class="text-right">
+                <span class="text-[10px] text-stone-400 font-bold block uppercase tracking-wider">영양 활성화도</span>
+                <span class="text-2xl font-black text-emerald-600"><span id="score">0</span>%</span>
+            </div>
+        </div>
 
-<canvas id="game" width="400" height="700"></canvas>
+        <!-- 2. 게임 영역 (터치존 및 영양소 파티클 생성 구역) -->
+        <div id="touch-zone" class="flex flex-col items-center justify-center my-4 cursor-pointer relative" onclick="handleTouch(event)">
+            <div class="char-container bg-amber-50/40 shadow-inner border border-amber-200 transition-all duration-200">
+                <!-- 원본 이미지를 활용한 발아 단계별 매칭 -->
+                <img id="character" src="watermarked_img_14327949871261009267.png" alt="발아현미 캐릭터" class="object-contain max-h-full transition-all duration-200">
+            </div>
+            <p id="hint-text" class="text-xs text-amber-600 font-black animate-pulse mt-4">⚡ 두드려서 발아현미의 눈을 깨우세요! ⚡</p>
+        </div>
 
-<script>
+        <!-- 3. 하단 공정 단계 및 공정 설명 -->
+        <div class="bg-stone-900 text-white rounded-2xl p-4 text-center shadow-lg">
+            <div id="stage-name" class="text-sm font-black text-amber-400">1단계: 엄선된 현미 고르기</div>
+            <div id="stage-desc" class="text-xs text-stone-300 mt-1">깨끗하고 단단한 통현미 상태입니다.</div>
+            
+            <button id="start-btn" onclick="startGame(event)" class="w-full bg-gradient-to-r from-amber-500 to-emerald-600 text-white font-extrabold py-3 px-4 rounded-xl mt-3 shadow-md hover:opacity-95 transition cursor-pointer">
+                발아 공정 시작하기 🌾
+            </button>
+        </div>
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+        <!-- 4. 엔딩/실패 오버레이 -->
+        <div id="overlay" class="absolute inset-0 bg-stone-900/95 flex flex-col items-center justify-center text-white p-6 hidden z-50">
+            <h2 id="overlay-title" class="text-3xl font-black mb-2 text-amber-400">🎉 발아 대성공! 🎉</h2>
+            <p id="overlay-desc" class="text-sm text-stone-300 text-center mb-6">가바(GABA)와 영양이 최고조에 달했습니다!<br>맛있고 부드러운 발아현미 상점으로 이동합니다...</p>
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
+        </div>
+    </div>
 
-let gameState = "start";
-let score = 0;
+    <script>
+        // 실제 기업 자사몰 또는 스마트스토어 발아현미 상품 링크 주소
+        const BUY_URL = "https://your-shop-link.com/products/germinated-brown-rice"; 
 
-const player = {
-    x:180,
-    y:600,
-    w:40,
-    h:40,
-    vx:0,
-    vy:0
-};
+        // 발아현미 공정 스토리라인 및 스케일 맵핑
+        const stages = [
+            { name: "1단계: 엄선된 통현미 🌾", desc: "영양을 가득 머금은 단단한 현미 상태입니다.", pos: "0% center", scale: 0.8 },
+            { name: "2단계: 깨끗한 물 투과 💧", desc: "적정 온도의 물을 만나 세포들이 잠에서 깨어납니다.", pos: "25% center", scale: 1.0 },
+            { name: "3단계: 0.5mm 싹이 트다! 🌱", desc: "현미의 눈에서 싹이 트며 영양이 폭발하기 시작합니다!", pos: "50% center", scale: 1.2 },
+            { name: "4단계: 가바(GABA) 대폭발 🔥", desc: "일반 현미의 몇 배에 달하는 식이섬유와 가바 활성화!", pos: "75% center", scale: 1.4 },
+            { name: "5단계: 부드럽고 건강한 발아현미 🥣", desc: "까슬함은 사라지고 완벽한 영양식 완성! 상점으로 순간이동!", pos: "100% center", scale: 1.6 }
+        ];
 
-let platforms = [];
+        // 터치할 때마다 뿜어져 나올 발아현미 영양소 텍스트 배열
+        const nutrients = ["가바(GABA) ⬆️", "식이섬유 ⬆️", "비타민E ⬆️", "미네랄 ⬆️", "감마오리자놀 ⬆️", "소화 효소 ⬆️", "부드러운 식감 ✨"];
 
-function createPlatform(x,y){
-    platforms.push({
-        x:x,
-        y:y,
-        w:80,
-        h:15
-    });
-}
+        let score = 0;
+        let timeLeft = 60.00;
+        let timerInterval = null;
+        let isPlaying = false;
 
-function resetGame(){
+        const charImg = document.getElementById('character');
+        const container = document.querySelector('.char-container');
+        const touchZone = document.getElementById('touch-zone');
 
-    score = 0;
-
-    player.x = 180;
-    player.y = 600;
-    player.vx = 0;
-    player.vy = 0;
-
-    platforms = [];
-
-    for(let i=0;i<10;i++){
-        createPlatform(
-            Math.random()*320,
-            700-(i*80)
-        );
-    }
-
-    document.getElementById("score").innerText =
-        "점수 : 0";
-
-    document.getElementById("stage").innerText =
-        "🌱 씨앗";
-}
-
-resetGame();
-
-let left = false;
-let right = false;
-
-document.addEventListener("keydown",(e)=>{
-
-    if(gameState==="start"){
-        gameState="play";
-    }
-
-    if(e.key==="ArrowLeft") left=true;
-    if(e.key==="ArrowRight") right=true;
-});
-
-document.addEventListener("keyup",(e)=>{
-    if(e.key==="ArrowLeft") left=false;
-    if(e.key==="ArrowRight") right=false;
-});
-
-canvas.addEventListener("click",()=>{
-
-    if(gameState==="start"){
-        gameState="play";
-    }
-
-    if(gameState==="gameover"){
-        resetGame();
-        gameState="play";
-    }
-});
-
-canvas.addEventListener("touchstart",(e)=>{
-
-    if(gameState==="start"){
-        gameState="play";
-        return;
-    }
-
-    let x = e.touches[0].clientX;
-
-    if(x < window.innerWidth/2){
-        left=true;
-        right=false;
-    }else{
-        right=true;
-        left=false;
-    }
-});
-
-canvas.addEventListener("touchend",()=>{
-    left=false;
-    right=false;
-});
-
-function getStage(){
-
-    if(score<500) return "🌱 씨앗";
-    if(score<1000) return "🌿 새싹";
-    if(score<2000) return "🌾 벼";
-    if(score<3000) return "🚜 수확";
-    if(score<4000) return "🍚 쌀";
-    if(score<5000) return "🥣 누룽지";
-
-    return "🌏 글로벌 브랜드";
-}
-
-function update(){
-
-    if(gameState!=="play") return;
-
-    if(left){
-        player.vx=-5;
-    }
-    else if(right){
-        player.vx=5;
-    }
-    else{
-        player.vx=0;
-    }
-
-    player.x += player.vx;
-
-    if(player.x<-40) player.x=400;
-    if(player.x>400) player.x=-40;
-
-    player.vy += 0.3;
-    player.y += player.vy;
-
-    for(let p of platforms){
-
-        if(
-            player.vy>0 &&
-            player.x+player.w>p.x &&
-            player.x<p.x+p.w &&
-            player.y+player.h>p.y &&
-            player.y+player.h<p.y+p.h+10
-        ){
-            player.vy=-10;
+        function initCharacter() {
+            charImg.style.objectFit = "cover";
+            charImg.style.objectPosition = stages[0].pos;
+            charImg.style.width = "500% auto";
+            container.style.transform = `scale(${stages[0].scale})`;
         }
-    }
 
-    if(player.y<250){
-
-        let diff = 250-player.y;
-
-        player.y = 250;
-
-        score += Math.floor(diff);
-
-        for(let p of platforms){
-            p.y += diff;
+        function startGame(e) {
+            e.stopPropagation();
+            document.getElementById('start-btn').classList.add('hidden');
+            isPlaying = true;
+            
+            timerInterval = setInterval(() => {
+                timeLeft -= 0.01;
+                if (timeLeft <= 0) {
+                    timeLeft = 0;
+                    endGame(false);
+                }
+                document.getElementById('timer').innerText = timeLeft.toFixed(2) + '초';
+            }, 10);
         }
-    }
 
-    platforms = platforms.filter(
-        p => p.y < 800
-    );
+        function handleTouch(e) {
+            if (!isPlaying) return;
 
-    while(platforms.length<12){
+            score++;
+            document.getElementById('score').innerText = score;
 
-        let highest = Math.min(
-            ...platforms.map(p=>p.y)
-        );
+            // 1. 타격감 팝 애니메이션
+            container.classList.remove('pop-effect');
+            void container.offsetWidth;
+            container.classList.add('pop-effect');
 
-        createPlatform(
-            Math.random()*320,
-            highest-80
-        );
-    }
+            // 2. 사방으로 영양소 텍스트 뿌리기 효과
+            createNutrientEffect(e);
 
-    document.getElementById("score").innerText =
-        "점수 : "+score;
+            // 3. 100% 달성 기준 25% 단위로 발아 단계 진화
+            let stageIdx = Math.min(Math.floor(score / 25), stages.length - 1);
+            if (score === 100) stageIdx = 4;
 
-    document.getElementById("stage").innerText =
-        getStage();
+            const currentStage = stages[stageIdx];
+            document.getElementById('stage-name').innerText = currentStage.name;
+            document.getElementById('stage-desc').innerText = currentStage.desc;
+            charImg.style.objectPosition = currentStage.pos;
+            container.style.transform = `scale(${currentStage.scale})`;
 
-    if(player.y>800){
-        gameState="gameover";
-    }
-}
+            if (score >= 100) {
+                endGame(true);
+            }
+        }
 
-function drawStart(){
+        // 영양소 팝업 글자 생성기
+        function createNutrientEffect(e) {
+            const textNode = document.createElement('span');
+            // 무작위 영양소 텍스트 선택
+            const randomNutrient = nutrients[Math.floor(Math.random() * nutrients.length)];
+            textNode.innerText = randomNutrient;
+            textNode.className = "nutrient-text text-amber-600 font-black drop-shadow";
 
-    ctx.fillStyle="#87CEEB";
-    ctx.fillRect(0,0,400,700);
+            // 터치 구역 기준으로 사방 랜덤 좌표 지정 (--x, --y 변수로 애니메이션에 전달)
+            const randomX = (Math.random() - 0.5) * 250;
+            const randomY = (Math.random() - 0.5) * 250 - 50; 
+            textNode.style.setProperty('--x', `${randomX}px`);
+            textNode.style.setProperty('--y', `${randomY}px`);
 
-    ctx.fillStyle="white";
-    ctx.textAlign="center";
+            // 마우스/터치 위치 기준으로 중앙 배치
+            textNode.style.left = `calc(50% - 40px)`;
+            textNode.style.top = `40%`;
 
-    ctx.font="36px Arial";
-    ctx.fillText(
-        "미실란 성장 점프",
-        200,
-        250
-    );
+            touchZone.appendChild(textNode);
 
-    ctx.font="22px Arial";
-    ctx.fillText(
-        "쌀 한 톨의 성장 이야기",
-        200,
-        320
-    );
+            // 애니메이션이 끝나면 요소 삭제 (메모리 관리)
+            setTimeout(() => { textNode.remove(); }, 600);
+        }
 
-    ctx.font="28px Arial";
-    ctx.fillText(
-        "터치하여 시작",
-        200,
-        450
-    );
-}
+        function endGame(isSuccess) {
+            isPlaying = false;
+            clearInterval(timerInterval);
 
-function drawGame(){
+            const overlay = document.getElementById('overlay');
+            const title = document.getElementById('overlay-title');
+            const desc = document.getElementById('overlay-desc');
 
-    ctx.clearRect(0,0,400,700);
+            overlay.classList.remove('hidden');
 
-    for(let p of platforms){
+            if (isSuccess) {
+                title.innerText = "🎉 발아 대성공! 🎉";
+                desc.innerHTML = "가바(GABA)와 영양이 최고조에 달했습니다!<br>0.5초 후 몸에 좋은 발아현미 상점으로 이동합니다.";
+                setTimeout(() => { window.location.href = BUY_URL; }, 500);
+            } else {
+                title.innerText = "😢 발아 실패 😢";
+                title.className = "text-3xl font-black text-red-500 mb-2";
+                desc.innerHTML = "수분이나 온도가 부족해 발아가 중단되었습니다.<br>다시 건강한 싹을 틔워보세요!";
+                
+                const retryBtn = document.createElement('button');
+                retryBtn.innerText = "공정 재가동 🔄";
+                retryBtn.className = "mt-4 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-6 rounded-xl text-sm transition";
+                retryBtn.onclick = () => location.reload();
+                overlay.appendChild(retryBtn);
+            }
+        }
 
-        ctx.fillStyle="white";
-
-        ctx.fillRect(
-            p.x,
-            p.y,
-            p.w,
-            p.h
-        );
-    }
-
-    ctx.fillStyle="#FDBA74";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        player.x+20,
-        player.y+20,
-        20,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-}
-
-function drawGameOver(){
-
-    ctx.fillStyle="rgba(0,0,0,0.75)";
-    ctx.fillRect(0,0,400,700);
-
-    ctx.fillStyle="white";
-    ctx.textAlign="center";
-
-    ctx.font="40px Arial";
-    ctx.fillText(
-        "게임 종료",
-        200,
-        250
-    );
-
-    ctx.font="26px Arial";
-    ctx.fillText(
-        "점수 : "+score,
-        200,
-        330
-    );
-
-    ctx.font="24px Arial";
-    ctx.fillText(
-        "클릭하여 다시 시작",
-        200,
-        450
-    );
-}
-
-function gameLoop(){
-
-    update();
-
-    if(gameState==="start"){
-        drawStart();
-    }
-
-    if(gameState==="play"){
-        drawGame();
-    }
-
-    if(gameState==="gameover"){
-        drawGame();
-        drawGameOver();
-    }
-
-    requestAnimationFrame(gameLoop);
-}
-
-gameLoop();
-
-</script>
-
+        window.onload = initCharacter;
+    </script>
 </body>
 </html>
