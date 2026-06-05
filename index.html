@@ -7,72 +7,72 @@
 
 <style>
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
 body{
-    background:#f5f5f5;
-    font-family:sans-serif;
-    text-align:center;
+    background:#f5f5f5;
+    font-family:sans-serif;
+    text-align:center;
 }
 
 h1{
-    margin-top:20px;
+    margin-top:20px;
 }
 
 #gameInfo{
-    display:flex;
-    justify-content:center;
-    gap:30px;
-    margin:20px;
-    font-size:22px;
-    font-weight:bold;
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    margin:20px;
+    font-size:22px;
+    font-weight:bold;
 }
 
 #character{
-    width:300px;
-    height:300px;
-    margin:20px auto;
-    background:white;
-    border-radius:20px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:150px;
-    cursor:pointer;
-    user-select:none;
-    transition:0.2s;
-    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+    width:300px;
+    height:300px;
+    margin:20px auto;
+    background:white;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:150px;
+    cursor:pointer;
+    user-select:none;
+    transition:0.2s;
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
 }
 
 #character:active{
-    transform:scale(0.95);
+    transform:scale(0.95);
 }
 
 #message{
-    font-size:32px;
-    font-weight:bold;
-    margin:20px;
+    font-size:32px;
+    font-weight:bold;
+    margin:20px;
 }
 
 button{
-    padding:12px 30px;
-    font-size:18px;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    background:#2e7d32;
-    color:white;
+    padding:12px 30px;
+    font-size:18px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    background:#2e7d32;
+    color:white;
 }
 
 .success{
-    color:green;
+    color:green;
 }
 
 .fail{
-    color:red;
+    color:red;
 }
 </style>
 </head>
@@ -82,8 +82,8 @@ button{
 <h1>🌾 미실란 성장 게임 🌾</h1>
 
 <div id="gameInfo">
-    <div>⏰ 남은 시간: <span id="time">60</span>초</div>
-    <div>👆 터치 수: <span id="count">0</span></div>
+    <div>⏰ 남은 시간: <span id="time">60</span>초</div>
+    <div>👆 터치 수: <span id="count">0</span></div>
 </div>
 
 <div id="character">🌾</div>
@@ -105,77 +105,77 @@ const message = document.getElementById("message");
 
 function updateCharacter(){
 
-    if(count < 10){
-        character.innerHTML = "🌾";
-    }
-    else if(count < 30){
-        character.innerHTML = "🌱";
-    }
-    else if(count < 60){
-        character.innerHTML = "🌿";
-    }
-    else if(count < 100){
-        character.innerHTML = "🌾✨";
-    }
-    else{
-        character.innerHTML = "👑";
-    }
+    if(count < 10){
+        character.innerHTML = "🌾";
+    }
+    else if(count < 30){
+        character.innerHTML = "🌱";
+    }
+    else if(count < 60){
+        character.innerHTML = "🌿";
+    }
+    else if(count < 100){
+        character.innerHTML = "🌾✨";
+    }
+    else{
+        character.innerHTML = "👑";
+    }
 
 }
 
 character.addEventListener("click", ()=>{
 
-    if(gameOver) return;
+    if(gameOver) return;
 
-    count++;
-    countText.textContent = count;
+    count++;
+    countText.textContent = count;
 
-    updateCharacter();
+    updateCharacter();
 
-    if(count >= 100){
-        gameOver = true;
+    if(count >= 100){
+        gameOver = true;
 
-        message.textContent =
-        "🎉 게임 성공! 미실란 마스터 달성!";
-        message.className = "success";
-    }
+        message.textContent =
+        "🎉 게임 성공! 미실란 마스터 달성!";
+        message.className = "success";
+    }
 
 });
 
 const timer = setInterval(()=>{
 
-    if(gameOver) return;
+    if(gameOver) return;
 
-    timeLeft--;
-    timeText.textContent = timeLeft;
+    timeLeft--;
+    timeText.textContent = timeLeft;
 
-    if(timeLeft <= 0){
+    if(timeLeft <= 0){
 
-        gameOver = true;
+        gameOver = true;
 
-        message.textContent =
-        "💀 게임 오버! 시간 초과!";
-        message.className = "fail";
+        message.textContent =
+        "💀 게임 오버! 시간 초과!";
+        message.className = "fail";
 
-    }
+    }
 
 },1000);
 
 function restartGame(){
 
-    count = 0;
-    timeLeft = 60;
-    gameOver = false;
+    count = 0;
+    timeLeft = 60;
+    gameOver = false;
 
-    countText.textContent = 0;
-    timeText.textContent = 60;
+    countText.textContent = 0;
+    timeText.textContent = 60;
 
-    character.innerHTML = "🌾";
+    character.innerHTML = "🌾";
 
-    message.textContent =
-    "캐릭터를 빠르게 터치하세요!";
+    message.textContent =
+    "캐릭터를 빠르게 터치하세요!";
 
-    message.className = "";
+    message.className = "";
 
 }
 
