@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>성장 점프 게임</title>
+
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+    background:#87CEEB;
+    font-family:sans-serif;
+}
+
+#game{
+    display:block;
+    margin:auto;
+    background:linear-gradient(#87CEEB,#dff6ff);
+}
+
+#ui{
+    position:absolute;
+    top:10px;
+    left:10px;
+    color:white;
+    font-size:22px;
+    font-weight:bold;
+    text-shadow:2px 2px 4px black;
+}
+
+#stage{
+    margin-top:5px;
+}
+</style>
+</head>
+<body>
+
+<div id="ui">
+    <div id="score">점수: 0</div>
+    <div id="stage">👶 아기</div>
+</div>
+
+<canvas id="game" width="400" height="700"></canvas>
+
+<script>
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let cameraY = 0;
+let score = 0;
+
+const player = {
+    x:180,
+    y:600,
+    w:40,
+    h:40,
+    vx:0,
+    vy:0
+};
+
+let platforms = [];
+
+function createPlatform(x,y){
+    platforms.push({
+        x:x,
+        y:y,
+        w:80,
+        h:15
+    });
+}
+
+for(let i=0;i<10;i++){
+    createPlatform(
+        Math.random()*320,
+        700 - i*80
+    );
+}
+
+let left=false;
+let right=false;
+
+document.addEventListener("keydown",e=>{
+    if(e.key==="ArrowLeft") left=true;
+    if(e.key==="ArrowRight") right=true;
+});
+
+document.addEventListener("keyup",e=>{
+    if(e.key==="ArrowLeft") left=false;
+    if(e.key==="ArrowRight") right=false;
+});
+
+canvas.addEventListener("touchstart",e=>{
+    const x=e.touches[0].clientX;
+
+    if(x<window.innerWidth/2){
+        left=true;
+        right=false;
+    }else{
+        right=true;
+        left=false;
+    }
+});
+
+canvas.addEventListener("touchend",()=>{
+    left=false;
+    right=false;
+});
+
+function stageText(){
+
+    if(score<500) return "👶 아기";
+    if(score<1000) return "🧒 어린이";
+    if(score<2000) return "🎒 학생";
+    if(score<3000) return "🎓 대학생";
+    if(score<4000) return "💼 직장인";
+    if(score<5000) return "👨 부모";
+    return "👴 노인";
+}
+
+function update(){
+
+    if(left) player.vx=-5;
+    else if(right) player.vx=5;
+    else player.vx=0;
+
+    player.x += player.vx;
+
+    if(player.x < -40) player.x = 400;
+    if(player.x > 400) player.x = -40;
+
+    player.vy += 0.3;
+    player.y += player.vy;
+
+    for(let p of platforms){
+
+        if(
+            player.vy > 0 &&
+            player.x + player.w > p.x &&
+            player.x < p.x + p.w &&
+            player.y + player.h > p.y &&
+            player.y + player.h < p.y + p.h + 10
+        ){
+            player.vy = -10;
+        }
+    }
+
+    if(player.y < 250){
+
+        let diff = 250 - player.y;
+        player.y = 250;
+
+        cameraY += diff;
+        score += Math.floor(diff);
+
+        for(let p of platforms){
+            p.y += diff;
+        }
+    }
+
+    platforms = platforms.filter(p=>p.y<900);
+
+    while(platforms.length<12){
+
+        let highest = Math.min(...platforms.map(p=>p.y));
+
+        createPlatform(
+            Math.random()*320,
+            highest - 80
+        );
+    }
+
+    document.getElementById("score").innerText =
+        "점수: " + score;
+
+    document.getElementById("stage").innerText =
+        stageText();
+
+    if(player.y > 800){
+
+        alert(
+            "게임 종료!\n점수: " + score
+        );
+
+        location.reload();
+    }
+}
+
+function draw(){
+
+    ctx.clearRect(0,0,400,700);
+
+    for(let p of platforms){
+
+        ctx.fillStyle="#ffffff";
+        ctx.fillRect(
+            p.x,p.y,
+            p.w,p.h
+        );
+    }
+
+    ctx.fillStyle="#ffb347";
+
+    ctx.beginPath();
+    ctx.arc(
+        player.x+20,
+        player.y+20,
+        20,
+        0,
+        Math.PI*2
+    );
+    ctx.fill();
+
+}
+
+function loop(){
+
+    update();
+    draw();
+
+    requestAnimationFrame(loop);
+}
+
+loop();
+
+</script>
+
+</body>
+</html>
