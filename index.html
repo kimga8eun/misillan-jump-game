@@ -1,19 +1,10 @@
-제공해주신 이미지 파일명과 매칭되도록 기존 코드 내의 QR 코드 이미지 경로를 `image/shopeeQR.png.png`로 수정했습니다.
-
-그 외에 디자인이 깨지지 않도록 아래 변경된 부분만 스크립트와 HTML에서 가볍게 교체하시거나, 아래의 수정된 전체 코드를 그대로 복사해서 사용하시면 됩니다.
-
----
-
-### 수정된 전체 HTML 코드
-
-```html
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>미실란 성장 게임</title>
+<title>Trò Chơi Phát Triển Misillan</title>
 
 <style>
 *{
@@ -50,7 +41,7 @@ body{
 }
 
 #header h1{
-    font-size:28px;
+    font-size:24px;
     margin-bottom:10px;
 }
 
@@ -105,7 +96,7 @@ body{
 }
 
 #message{
-    font-size:24px;
+    font-size:22px;
     font-weight:bold;
     margin-bottom:15px;
     white-space: pre-line;
@@ -167,10 +158,10 @@ button:hover{
 <div id="gameContainer">
 
     <div id="header">
-        <h1>🌾 미실란 성장 게임 🌾</h1>
+        <h1>🌾 Trò Chơi Phát Triển Misillan 🌾</h1>
         <div id="info">
-            <div>⏰ <span id="time">60</span>초</div>
-            <div>👆 <span id="count">0</span>회</div>
+            <div>⏰ <span id="time">20</span>s</div>
+            <div>👆 <span id="count">0</span></div>
         </div>
     </div>
 
@@ -179,21 +170,22 @@ button:hover{
     </div>
 
     <div id="footer">
-        <div id="message">🔥 지금입니다! 마구 연타하세요!</div>
+        <div id="message">🔥 Cơ hội đây rồi! Hãy bấm thật nhanh liên tục!</div>
         
+        <!-- QR 및 링크 표시 영역 -->
         <div id="resultArea">
-            <img class="qr-code" src="image/shopeeQR.png.png" alt="쇼피 QR 코드">
-            <a class="shopee-link" href="https://shopee.com" target="_blank">🛒 쇼피에서 미실란 만나보기</a>
+            <img class="qr-code" src="image/shopeeQR.png.png" alt="Mã QR Shopee">
+            <a class="shopee-link" href="https://shopee.vn" target="_blank">🛒 Khám phá Misillan trên Shopee</a>
         </div>
 
-        <button id="restartBtn" onclick="restartGame()">다시하기</button>
+        <button id="restartBtn" onclick="restartGame()">Chơi lại</button>
     </div>
 
 </div>
 
 <script>
 let count = 0;
-let timeLeft = 60;
+let timeLeft = 20; // 시간을 20초로 변경
 let gameOver = false;
 let timerInterval = null;
 
@@ -227,7 +219,7 @@ function updateStage(){
     }
 
     mainBackground.style.backgroundImage = `url('${bg}')`;
-    character.innerHTML = `<img src="${char}" alt="캐릭터">`;
+    character.innerHTML = `<img src="${char}" alt="Nhân vật">`;
 }
 
 character.addEventListener("click", ()=>{
@@ -270,11 +262,11 @@ function endGame(isSuccess) {
     resultArea.style.display = "flex";
 
     if(isSuccess) {
-        message.textContent = "🎉 베트남 진출 성공!\n축하합니다! 미실란이 멋지게 성장했습니다.";
+        message.textContent = "🎉 Tiến vào thị trường Việt Nam thành công!\nChúc mừng! Misillan đã phát triển một cách tuyệt vời.";
         message.className = "success";
         restartBtn.style.display = "none";
     } else {
-        message.textContent = "💀 시간 초과! 게임 오버!\n다시 도전해보세요!";
+        message.textContent = "💀 Hết giờ! Trò chơi kết thúc!\nHãy thử lại một lần nữa nhé!";
         message.className = "fail";
         restartBtn.style.display = "inline-block";
     }
@@ -282,13 +274,13 @@ function endGame(isSuccess) {
 
 function restartGame(){
     count = 0;
-    timeLeft = 60;
+    timeLeft = 20; // 재시작 시에도 20초로 초기화
     gameOver = false;
 
     countText.textContent = 0;
-    timeText.textContent = 60;
+    timeText.textContent = 20;
 
-    message.textContent = "🔥 지금입니다! 마구 연타하세요!";
+    message.textContent = "🔥 Cơ hội đây rồi! Hãy bấm thật nhanh liên tục!";
     message.className = "";
     
     resultArea.style.display = "none";
@@ -306,5 +298,3 @@ startTimer();
 
 </body>
 </html>
-
-```
