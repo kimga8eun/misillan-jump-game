@@ -1,199 +1,309 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>미실란 성장 게임</title>
-    <!-- Tailwind CSS 로드 -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>
-        /* 캐릭터를 가두고 실시간으로 키울 컨테이너 설정 */
-        .char-container {
-            width: 220px;
-            height: 220px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border-radius: 50%;
-            transition: transform 0.1s ease-out;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>미실란 성장 게임</title>
 
-        /* 터치 시 타격감을 주는 탄성 애니메이션 효과 */
-        .pop-effect {
-            animation: pop 0.05s ease-in-out;
-        }
-        @keyframes pop {
-            0% { transform: scale(var(--current-scale)); }
-            50% { transform: scale(calc(var(--current-scale) * 1.05)); }
-            100% { transform: scale(var(--current-scale)); }
-        }
-    </style>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #f5f5f5;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* 1. 전체 세로형 게임 스크린 틀 (상/하단 파란색 배경 고정) */
+#gameContainer {
+    width: 450px;
+    height: 750px;
+    background: #5aa2dc; /* 기획안의 상/하단 파란색(하늘색) */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* 2. 상단 정보 영역 (로고와 타이틀이 들어가는 흰색 박스 포함) */
+#headerArea {
+    padding: 20px 15px;
+    text-align: center;
+    position: relative;
+}
+
+/* 실제 기획안의 상단 흰색 컨텐츠 박스 */
+.header-content-box {
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px dashed #999; /* 기획안 느낌의 점선 */
+    margin-left: 60px; /* 로고가 들어갈 자리를 비워둠 */
+}
+
+.header-content-box h1 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+#gameInfo {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* 좌측 상단 미실란 로고 이미지 배치 */
+.logo {
+    position: absolute;
+    top: 20px;
+    left: 15px;
+    width: 55px;
+    height: 55px;
+    background: white;
+    border-radius: 8px;
+    padding: 2px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* 3. 중앙 게임 플레이 영역 (주황색 바탕 + 배경 이미지가 바뀌는 곳) */
+#mainBackground {
+    flex: 1;
+    background-color: #e67e22; /* 기획안의 주황색 기본 바탕 */
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border-top: 2px solid #333;
+    border-bottom: 2px solid #333;
+}
+
+/* 기획안의 'Background' 글자 표시 (디자인용) */
+.bg-label {
+    position: absolute;
+    bottom: 20px;
+    color: #333;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* 4. 중앙 캐릭터 상자 (기획안의 파란색 stage 박스) */
+#character {
+    width: 180px;
+    height: 180px;
+    background: #5aa2dc; /* 기획안의 스테이지 파란색 배경 */
+    border: 2px solid #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s;
+}
+
+#character:active {
+    transform: scale(0.95);
+}
+
+#character img {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+}
+
+/* 기획안 캐릭터 상자 안의 'stage' 글자 */
+.stage-label {
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+    margin-top: 2px;
+}
+
+/* 5. 하단 안내 및 컨트롤 영역 */
+#footerArea {
+    padding: 20px 15px;
+    text-align: center;
+}
+
+/* 하단 흰색 메시지 박스 */
+.footer-content-box {
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px dashed #999;
+    margin-bottom: 15px;
+}
+
+#message {
+    font-size: 22px;
+    font-weight: bold;
+    color: #222;
+}
+
+button {
+    padding: 10px 30px;
+    font-size: 16px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    cursor: pointer;
+    background: #43a047;
+    color: white;
+    font-weight: bold;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.success { color: green; }
+.fail { color: red; }
+</style>
 </head>
-<!-- 모바일 더블탭 줌 버그 방지를 위한 touch-manipulation 설정 -->
-<body class="bg-stone-100 min-h-screen flex items-center justify-center p-4 font-sans select-none touch-manipulation">
 
-    <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-stone-200 p-6 flex flex-col justify-between min-h-[600px] relative overflow-hidden">
-        
-        <!-- [상단 헤더] 보내주신 이미지 스타일의 타이틀 및 대기/실시간 정보창 -->
-        <div class="text-center bg-stone-50 p-4 rounded-2xl border border-stone-100">
-            <h1 class="text-xl font-black text-stone-800 flex items-center justify-center gap-1">
-                🌾 미실란 성장 게임 🌾
-            </h1>
-            <div class="flex justify-center gap-6 mt-2 text-sm font-bold text-stone-600">
-                <div>⏰ 남은 시간: <span id="timer">60초</span></div>
-                <div>👆 터치 수: <span id="score">0</span></div>
+<body>
+
+<div id="gameContainer">
+    <div class="logo">
+        <img src="img/misellan" alt="로고">
+    </div>
+
+    <div id="headerArea">
+        <div class="header-content-box">
+            <h1>🌾 미실란 성장 게임 🌾</h1>
+            <div id="gameInfo">
+                <div>⏰ 남은 시간: <span id="time">60</span>초</div>
+                <div>👆 터치 수: <span id="count">0</span></div>
             </div>
-        </div>
-
-        <!-- [중앙 영역] 첫 페이지 진입 시 로고/기본 상태 유지, 클릭 시 게임존 작동 -->
-        <div id="touch-zone" class="flex flex-col items-center justify-center my-6 relative min-h-[260px]">
-            <div class="char-container bg-stone-50/80 shadow-inner border border-stone-200 relative">
-                <!-- 원본 이미지를 활용한 발아 단계별 매칭 (초기 0% 세팅) -->
-                <img id="character" src="watermarked_img_14327949871261009267.png" alt="미실란 캐릭터" class="object-contain max-h-full">
-            </div>
-            <p id="hint-text" class="text-sm font-bold text-stone-700 mt-6 transition-all duration-200">
-                캐릭터를 빠르게 터치하세요!
-            </p>
-        </div>
-
-        <!-- [하단 영역] 첫 페이지 진입 시 노출되는 메인 시작 버튼 -->
-        <div class="text-center relative z-10">
-            <button id="start-btn" onclick="startGame(event)" class="w-full bg-[#3e7d34] hover:bg-[#32662a] text-white font-bold py-3 px-6 rounded-xl shadow-md transition duration-200 text-base cursor-pointer">
-                시작하기 🚀
-            </button>
-        </div>
-
-        <!-- [오버레이] 엔딩 / 실패 시 튕겨주는 최종 화면 레이어 -->
-        <div id="overlay" class="absolute inset-0 bg-stone-900/95 flex flex-col items-center justify-center text-white p-6 hidden z-50">
-            <h2 id="overlay-title" class="text-3xl font-black mb-2 text-amber-400">🎉 발아 대성공! 🎉</h2>
-            <p id="overlay-desc" class="text-sm text-stone-300 text-center mb-6">가바(GABA)와 영양이 최고조에 달했습니다!<br>잠시 후 미실란 상점으로 이동합니다...</p>
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
         </div>
     </div>
 
-    <script>
-        // 최종 전환될 미실란 구매 쇼핑몰 주소
-        const BUY_URL = "https://your-shop-link.com/products/misillan"; 
+    <div id="mainBackground">
+        <div id="character">
+            </div>
+        <div class="bg-label">Background</div>
+    </div>
 
-        // 각 구간별 이미지 스프라이트 포지션 (150타 기준 진화 서사)
-        const stages = [
-            { name: "1단계: 엄선된 통현미 🌾", desc: "캐릭터를 빠르게 터치하세요!", pos: "0% center" },
-            { name: "2단계: 깨끗한 물 투과 💧", desc: "싹을 틔우기 위해 수분을 흡수 중입니다!", pos: "25% center" },
-            { name: "3단계: 싹이 트기 시작! 🌱", desc: "현미의 눈을 깨워 영양이 자라납니다!", pos: "50% center" },
-            { name: "4단계: 영양소 대폭발 🔥", desc: "가바와 식이섬유가 폭발적으로 활성화됩니다!", pos: "75% center" },
-            { name: "5단계: 미실란 발아현미 완공 🥣", desc: "성공! 부드럽고 건강한 미실란 발아현미 완성!", pos: "100% center" }
-        ];
+    <div id="footerArea">
+        <div class="footer-content-box">
+            <div id="message">캐릭터를 빠르게 터치하세요!</div>
+        </div>
+        <button onclick="restartGame()">다시하기</button>
+    </div>
+</div>
 
-        let touchCount = 0;
-        let timeLeft = 60.00;
-        let timerInterval = null;
-        let isPlaying = false;
-        const maxTouches = 150; // 최종 한계 터치 수
+<script>
 
-        const charImg = document.getElementById('character');
-        const container = document.querySelector('.char-container');
-        const touchZone = document.getElementById('touch-zone');
-        const hintText = document.getElementById('hint-text');
+let count = 0;
+let timeLeft = 60;
+let gameOver = false;
 
-        // 첫 페이지 진입 시 초기 화면 구성 (기본 크기 및 1단계 포지션)
-        window.onload = function() {
-            charImg.style.objectFit = "cover";
-            charImg.style.objectPosition = stages[0].pos;
-            charImg.style.width = "500% auto";
-            container.style.setProperty('--current-scale', 0.8);
-            container.style.transform = "scale(0.8)";
-            
-            // 첫 화면 진입 시에는 터치존 클릭 기능 비활성화 느낌으로 대기
-            touchZone.style.pointerEvents = "none"; 
-        };
+const countText = document.getElementById("count");
+const timeText = document.getElementById("time");
+const character = document.getElementById("character");
+const mainBackground = document.getElementById("mainBackground");
+const message = document.getElementById("message");
 
-        // 1. [첫 페이지 액션] '시작하기' 버튼 누르면 60초 타이머 스타트
-        function startGame(e) {
-            e.stopPropagation(); // 버블링을 막아 버튼 누른 동작이 첫 터치 카운트로 먹히지 않게 조율
-            
-            // 시작 버튼 숨기기 & 터치 잠금 해제
-            document.getElementById('start-btn').classList.add('hidden');
-            touchZone.style.pointerEvents = "auto"; 
-            hintText.innerText = "🔥 지금입니다! 마구 연타하세요! 🔥";
-            hintText.className = "text-sm font-black text-red-500 animate-bounce mt-6";
-            
-            isPlaying = true;
-            
-            // 0.01초 단위로 흐르는 고정밀 타이머 구동
-            timerInterval = setInterval(() => {
-                timeLeft -= 0.01;
-                if (timeLeft <= 0) {
-                    timeLeft = 0;
-                    endGame(false);
-                }
-                document.getElementById('timer').innerText = timeLeft.toFixed(2) + '초';
-            }, 10);
-        }
+// 첫 시작 시 스테이지 새로고침
+window.onload = () => {
+    updateStage();
+};
 
-        // 2. [인터랙티브 요소를 활용한 실시간 스케일업 및 연타 로직]
-        function handleTouch() {
-            if (!isPlaying) return;
+// 단계별 배경화면과 캐릭터 이미지를 동시에 바꾸는 함수
+function updateStage(){
 
-            touchCount++;
-            document.getElementById('score').innerText = touchCount;
+    if(count < 20){
+        mainBackground.style.backgroundImage = "url('img/background1.png.png')";
+        character.innerHTML = `<img src="img/stage1.png.png" alt="1단계"><div class="stage-label">stage</div>`;
+    }
+    else if(count < 40){
+        mainBackground.style.backgroundImage = "url('img/background2.png.png')";
+        character.innerHTML = `<img src="img/stage2.png.png" alt="2단계"><div class="stage-label">stage</div>`;
+    }
+    else if(count < 60){
+        mainBackground.style.backgroundImage = "url('img/background3.png.png')";
+        character.innerHTML = `<img src="img/stage3.png.png" alt="3단계"><div class="stage-label">stage</div>`;
+    }
+    else if(count < 80){
+        mainBackground.style.backgroundImage = "url('img/background4.png.png')";
+        character.innerHTML = `<img src="img/stage4.png.png" alt="4단계"><div class="stage-label">stage</div>`;
+    }
+    else{
+        mainBackground.style.backgroundImage = "url('img/background5.png.png')";
+        character.innerHTML = `<img src="img/stage5.png.png" alt="최종단계"><div class="stage-label">stage</div>`;
+    }
 
-            // 터치할 때마다 물리적 크기가 누적되어 스케일업되는 공식
-            let currentScale = 0.8 + (touchCount * 0.004); 
-            container.style.setProperty('--current-scale', currentScale);
-            container.style.transform = `scale(${currentScale})`;
+}
 
-            // 찰진 손맛 피드백 애니메이션
-            container.classList.remove('pop-effect');
-            void container.offsetWidth; // 브라우저 리플로우 강제 유도
-            container.classList.add('pop-effect');
+character.addEventListener("click", ()=>{
 
-            // 터치 수 구간 분기법을 활용해 캐릭터 진화 이미지 매칭
-            let stageIdx = Math.min(Math.floor(touchCount / 38), stages.length - 1);
-            if (touchCount === maxTouches) stageIdx = 4;
+    if(gameOver) return;
 
-            const stage = stages[stageIdx];
-            hintText.innerText = stage.desc;
-            charImg.style.objectPosition = stage.pos;
+    count++;
+    countText.textContent = count;
 
-            // 3. [한계점 도달 및 화면 전환]
-            if (touchCount >= maxTouches) {
-                endGame(true);
-            }
-        }
+    updateStage();
 
-        // 게임 종료 후 오버레이 팝업 및 구매 링크 자동 이동
-        function endGame(isSuccess) {
-            isPlaying = false;
-            clearInterval(timerInterval);
+    if(count >= 100){
+        gameOver = true;
+        message.textContent = "🎉 미실란 마스터 달성!";
+        message.className = "success";
+    }
 
-            const overlay = document.getElementById('overlay');
-            const title = document.getElementById('overlay-title');
-            const desc = document.getElementById('overlay-desc');
+});
 
-            overlay.classList.remove('hidden');
+const timer = setInterval(()=>{
 
-            if (isSuccess) {
-                title.innerText = "🎉 발아 대성공! 🎉";
-                desc.innerHTML = "가바(GABA)와 영양이 최고조에 달했습니다!<br>0.5초 후 미실란 상점으로 자동 이동합니다.";
-                
-                // 완벽히 다 자란 후 최종 0.5초 뒤 페이지 순간이동
-                setTimeout(() => {
-                    window.location.href = BUY_URL;
-                }, 500);
-            } else {
-                title.innerText = "😢 발아 실패 😢";
-                title.className = "text-3xl font-black text-red-500 mb-2";
-                desc.innerHTML = "시간이 초과되어 발아가 중단되었습니다.<br>다시 도전해 보세요!";
-                
-                // 다시하기 버튼 인라인 생성 (보내주신 예시 이미지 속 초록색 컬러 차용)
-                const retryBtn = document.createElement('button');
-                retryBtn.innerText = "다시하기 🔄";
-                retryBtn.className = "mt-4 bg-[#3e7d34] hover:bg-[#32662a] text-white font-bold py-2 px-6 rounded-xl text-sm transition cursor-pointer";
-                retryBtn.onclick = () => location.reload();
-                overlay.appendChild(retryBtn);
-            }
-        }
-    </script>
+    if(gameOver) return;
+
+    timeLeft--;
+    timeText.textContent = timeLeft;
+
+    if(timeLeft <= 0){
+        gameOver = true;
+        message.textContent = "💀 시간 초과! 게임 오버!";
+        message.className = "fail";
+    }
+
+},1000);
+
+document.get
+function restartGame(){
+
+    count = 0;
+    timeLeft = 60;
+    gameOver = false;
+
+    countText.textContent = 0;
+    timeText.textContent = 60;
+
+    updateStage();
+
+    message.textContent = "캐릭터를 빠르게 터치하세요!";
+    message.className = "";
+
+}
+
+</script>
+
 </body>
 </html>
