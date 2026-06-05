@@ -7,7 +7,6 @@
 <title>미실란 성장 게임</title>
 
 <style>
-
 *{
     margin:0;
     padding:0;
@@ -30,6 +29,8 @@ body{
     border-radius:25px;
     overflow:hidden;
     box-shadow:0 10px 30px rgba(0,0,0,.2);
+    display: flex;
+    flex-direction: column;
 }
 
 #header{
@@ -53,8 +54,7 @@ body{
 }
 
 #mainBackground{
-    height:650px;
-
+    flex: 1;
     background-size:cover;
     background-position:center;
     background-repeat:no-repeat;
@@ -64,20 +64,16 @@ body{
     align-items:flex-end;
 
     padding-bottom:15px;
-
     position:relative;
 }
 
 #character{
     width:400px;
     height:400px;
-
     cursor:pointer;
-
     display:flex;
     justify-content:center;
     align-items:center;
-
     transition:0.08s;
 }
 
@@ -89,21 +85,47 @@ body{
     width:100%;
     height:100%;
     object-fit:contain;
-
-    filter:drop-shadow(
-        0 10px 15px rgba(0,0,0,.25)
-    );
+    filter:drop-shadow(0 10px 15px rgba(0,0,0,.25));
 }
 
 #footer{
     padding:20px;
     text-align:center;
+    background: white;
+    border-top: 1px solid #eee;
 }
 
 #message{
-    font-size:26px;
+    font-size:24px;
     font-weight:bold;
-    margin-bottom:20px;
+    margin-bottom:15px;
+    white-space: pre-line;
+}
+
+/* 결과창 스타일 */
+#resultArea {
+    margin-top: 15px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.qr-code {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+}
+
+.shopee-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ff5722;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+    font-size: 16px;
 }
 
 button{
@@ -114,6 +136,7 @@ button{
     color:white;
     font-size:18px;
     cursor:pointer;
+    margin-top: 10px;
 }
 
 button:hover{
@@ -127,7 +150,6 @@ button:hover{
 .fail{
     color:#e53935;
 }
-
 </style>
 </head>
 
@@ -137,7 +159,6 @@ button:hover{
 
     <div id="header">
         <h1>🌾 미실란 성장 게임 🌾</h1>
-
         <div id="info">
             <div>⏰ <span id="time">60</span>초</div>
             <div>👆 <span id="count">0</span>회</div>
@@ -149,130 +170,108 @@ button:hover{
     </div>
 
     <div id="footer">
-
-        <div id="message">
-            🔥 지금입니다! 마구 연타하세요!
+        <div id="message">🔥 지금입니다! 마구 연타하세요!</div>
+        
+        <div id="resultArea">
+            <img class="qr-code" src="image/shopeeQR.png.png" alt="쇼피 QR 코드">
+            <a class="shopee-link" href="https://shopee.com" target="_blank">🛒 쇼피에서 미실란 만나보기</a>
         </div>
 
-        <button onclick="restartGame()">
-            다시하기
-        </button>
-
+        <button id="restartBtn" onclick="restartGame()">다시하기</button>
     </div>
 
 </div>
 
 <script>
-
 let count = 0;
 let timeLeft = 60;
 let gameOver = false;
+let timerInterval = null;
 
 const countText = document.getElementById("count");
 const timeText = document.getElementById("time");
 const character = document.getElementById("character");
 const mainBackground = document.getElementById("mainBackground");
 const message = document.getElementById("message");
+const resultArea = document.getElementById("resultArea");
+const restartBtn = document.getElementById("restartBtn");
 
 function updateStage(){
-
     let bg;
     let char;
 
     if(count < 20){
-
         bg = "image/background1.png.png";
         char = "image/stage1.png.png";
-
     }else if(count < 40){
-
         bg = "image/background2.png.png";
         char = "image/stage2.png.png";
-
     }else if(count < 60){
-
         bg = "image/background3.png.png";
         char = "image/stage3.png.png";
-
     }else if(count < 80){
-
         bg = "image/background4.png.png";
         char = "image/stage4.png.png";
-
     }else{
-
         bg = "image/background5.png.png";
         char = "image/stage5.png.png";
-
     }
 
-    mainBackground.style.backgroundImage =
-        `url('${bg}')`;
-
-    character.innerHTML =
-        `<img src="${char}" alt="캐릭터">`;
-
+    mainBackground.style.backgroundImage = `url('${bg}')`;
+    character.innerHTML = `<img src="${char}" alt="캐릭터">`;
 }
 
 character.addEventListener("click", ()=>{
-
     if(gameOver) return;
 
-    character.animate(
-    [
+    character.animate([
         {transform:"scale(1)"},
         {transform:"scale(1.1)"},
         {transform:"scale(1)"}
-    ],
-    {
+    ], {
         duration:100
     });
 
     count++;
-
     countText.textContent = count;
-
     updateStage();
 
     if(count >= 100){
-
-        gameOver = true;
-
-        message.textContent =
-        "🎉 베트남 진출 성공!";
-
-        message.className =
-        "success";
-
+        endGame(true);
     }
-
 });
 
-setInterval(()=>{
+function startTimer() {
+    timerInterval = setInterval(()=>{
+        if(gameOver) return;
 
-    if(gameOver) return;
+        timeLeft--;
+        timeText.textContent = timeLeft;
 
-    timeLeft--;
+        if(timeLeft <= 0){
+            endGame(false);
+        }
+    },1000);
+}
 
-    timeText.textContent =
-        timeLeft;
+function endGame(isSuccess) {
+    gameOver = true;
+    clearInterval(timerInterval);
+    
+    resultArea.style.display = "flex";
 
-    if(timeLeft <= 0){
-
-        gameOver = true;
-
-        message.textContent =
-        "💀 시간 초과! 게임 오버!";
-
-        message.className =
-        "fail";
-
+    if(isSuccess) {
+        message.textContent = "🎉 베트남 진출 성공!\n축하합니다! 미실란이 멋지게 성장했습니다.";
+        message.className = "success";
+        restartBtn.style.display = "none";
+    } else {
+        message.textContent = "💀 시간 초과! 게임 오버!\n다시 도전해보세요!";
+        message.className = "fail";
+        restartBtn.style.display = "inline-block";
     }
-
-},1000);
+}
 
 function restartGame(){
-
     count = 0;
     timeLeft = 60;
     gameOver = false;
@@ -280,17 +279,20 @@ function restartGame(){
     countText.textContent = 0;
     timeText.textContent = 60;
 
-    message.textContent =
-    "🔥 지금입니다! 마구 연타하세요!";
-
+    message.textContent = "🔥 지금입니다! 마구 연타하세요!";
     message.className = "";
+    
+    resultArea.style.display = "none";
+    restartBtn.style.display = "inline-block";
 
     updateStage();
-
+    clearInterval(timerInterval);
+    startTimer();
 }
 
+// 초기 실행
 updateStage();
-
+startTimer();
 </script>
 
 </body>
