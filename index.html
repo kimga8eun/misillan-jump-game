@@ -3,20 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>성장 점프 게임</title>
+<title>미실란 성장 점프</title>
 
 <style>
-body{
+*{
     margin:0;
-    overflow:hidden;
-    background:#87CEEB;
-    font-family:sans-serif;
+    padding:0;
+    box-sizing:border-box;
 }
 
-#game{
+body{
+    overflow:hidden;
+    background:#87CEEB;
+    font-family:Arial, sans-serif;
+}
+
+canvas{
     display:block;
     margin:auto;
-    background:linear-gradient(#87CEEB,#dff6ff);
+    background:linear-gradient(#87CEEB,#EAF9FF);
 }
 
 #ui{
@@ -24,21 +29,17 @@ body{
     top:10px;
     left:10px;
     color:white;
-    font-size:22px;
+    font-size:20px;
     font-weight:bold;
-    text-shadow:2px 2px 4px black;
-}
-
-#stage{
-    margin-top:5px;
+    text-shadow:2px 2px 4px rgba(0,0,0,0.5);
 }
 </style>
 </head>
 <body>
 
 <div id="ui">
-    <div id="score">점수: 0</div>
-    <div id="stage">👶 아기</div>
+    <div id="score">점수 : 0</div>
+    <div id="stage">🌱 씨앗</div>
 </div>
 
 <canvas id="game" width="400" height="700"></canvas>
@@ -48,7 +49,7 @@ body{
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-let cameraY = 0;
+let gameState = "start";
 let score = 0;
 
 const player = {
@@ -71,30 +72,73 @@ function createPlatform(x,y){
     });
 }
 
-for(let i=0;i<10;i++){
-    createPlatform(
-        Math.random()*320,
-        700 - i*80
-    );
+function resetGame(){
+
+    score = 0;
+
+    player.x = 180;
+    player.y = 600;
+    player.vx = 0;
+    player.vy = 0;
+
+    platforms = [];
+
+    for(let i=0;i<10;i++){
+        createPlatform(
+            Math.random()*320,
+            700-(i*80)
+        );
+    }
+
+    document.getElementById("score").innerText =
+        "점수 : 0";
+
+    document.getElementById("stage").innerText =
+        "🌱 씨앗";
 }
 
-let left=false;
-let right=false;
+resetGame();
 
-document.addEventListener("keydown",e=>{
+let left = false;
+let right = false;
+
+document.addEventListener("keydown",(e)=>{
+
+    if(gameState==="start"){
+        gameState="play";
+    }
+
     if(e.key==="ArrowLeft") left=true;
     if(e.key==="ArrowRight") right=true;
 });
 
-document.addEventListener("keyup",e=>{
+document.addEventListener("keyup",(e)=>{
     if(e.key==="ArrowLeft") left=false;
     if(e.key==="ArrowRight") right=false;
 });
 
-canvas.addEventListener("touchstart",e=>{
-    const x=e.touches[0].clientX;
+canvas.addEventListener("click",()=>{
 
-    if(x<window.innerWidth/2){
+    if(gameState==="start"){
+        gameState="play";
+    }
+
+    if(gameState==="gameover"){
+        resetGame();
+        gameState="play";
+    }
+});
+
+canvas.addEventListener("touchstart",(e)=>{
+
+    if(gameState==="start"){
+        gameState="play";
+        return;
+    }
+
+    let x = e.touches[0].clientX;
+
+    if(x < window.innerWidth/2){
         left=true;
         right=false;
     }else{
@@ -108,27 +152,36 @@ canvas.addEventListener("touchend",()=>{
     right=false;
 });
 
-function stageText(){
+function getStage(){
 
-    if(score<500) return "👶 아기";
-    if(score<1000) return "🧒 어린이";
-    if(score<2000) return "🎒 학생";
-    if(score<3000) return "🎓 대학생";
-    if(score<4000) return "💼 직장인";
-    if(score<5000) return "👨 부모";
-    return "👴 노인";
+    if(score<500) return "🌱 씨앗";
+    if(score<1000) return "🌿 새싹";
+    if(score<2000) return "🌾 벼";
+    if(score<3000) return "🚜 수확";
+    if(score<4000) return "🍚 쌀";
+    if(score<5000) return "🥣 누룽지";
+
+    return "🌏 글로벌 브랜드";
 }
 
 function update(){
 
-    if(left) player.vx=-5;
-    else if(right) player.vx=5;
-    else player.vx=0;
+    if(gameState!=="play") return;
+
+    if(left){
+        player.vx=-5;
+    }
+    else if(right){
+        player.vx=5;
+    }
+    else{
+        player.vx=0;
+    }
 
     player.x += player.vx;
 
-    if(player.x < -40) player.x = 400;
-    if(player.x > 400) player.x = -40;
+    if(player.x<-40) player.x=400;
+    if(player.x>400) player.x=-40;
 
     player.vy += 0.3;
     player.y += player.vy;
@@ -136,22 +189,22 @@ function update(){
     for(let p of platforms){
 
         if(
-            player.vy > 0 &&
-            player.x + player.w > p.x &&
-            player.x < p.x + p.w &&
-            player.y + player.h > p.y &&
-            player.y + player.h < p.y + p.h + 10
+            player.vy>0 &&
+            player.x+player.w>p.x &&
+            player.x<p.x+p.w &&
+            player.y+player.h>p.y &&
+            player.y+player.h<p.y+p.h+10
         ){
-            player.vy = -10;
+            player.vy=-10;
         }
     }
 
-    if(player.y < 250){
+    if(player.y<250){
 
-        let diff = 250 - player.y;
+        let diff = 250-player.y;
+
         player.y = 250;
 
-        cameraY += diff;
         score += Math.floor(diff);
 
         for(let p of platforms){
@@ -159,50 +212,83 @@ function update(){
         }
     }
 
-    platforms = platforms.filter(p=>p.y<900);
+    platforms = platforms.filter(
+        p => p.y < 800
+    );
 
     while(platforms.length<12){
 
-        let highest = Math.min(...platforms.map(p=>p.y));
+        let highest = Math.min(
+            ...platforms.map(p=>p.y)
+        );
 
         createPlatform(
             Math.random()*320,
-            highest - 80
+            highest-80
         );
     }
 
     document.getElementById("score").innerText =
-        "점수: " + score;
+        "점수 : "+score;
 
     document.getElementById("stage").innerText =
-        stageText();
+        getStage();
 
-    if(player.y > 800){
-
-        alert(
-            "게임 종료!\n점수: " + score
-        );
-
-        location.reload();
+    if(player.y>800){
+        gameState="gameover";
     }
 }
 
-function draw(){
+function drawStart(){
+
+    ctx.fillStyle="#87CEEB";
+    ctx.fillRect(0,0,400,700);
+
+    ctx.fillStyle="white";
+    ctx.textAlign="center";
+
+    ctx.font="36px Arial";
+    ctx.fillText(
+        "미실란 성장 점프",
+        200,
+        250
+    );
+
+    ctx.font="22px Arial";
+    ctx.fillText(
+        "쌀 한 톨의 성장 이야기",
+        200,
+        320
+    );
+
+    ctx.font="28px Arial";
+    ctx.fillText(
+        "터치하여 시작",
+        200,
+        450
+    );
+}
+
+function drawGame(){
 
     ctx.clearRect(0,0,400,700);
 
     for(let p of platforms){
 
-        ctx.fillStyle="#ffffff";
+        ctx.fillStyle="white";
+
         ctx.fillRect(
-            p.x,p.y,
-            p.w,p.h
+            p.x,
+            p.y,
+            p.w,
+            p.h
         );
     }
 
-    ctx.fillStyle="#ffb347";
+    ctx.fillStyle="#FDBA74";
 
     ctx.beginPath();
+
     ctx.arc(
         player.x+20,
         player.y+20,
@@ -210,19 +296,61 @@ function draw(){
         0,
         Math.PI*2
     );
-    ctx.fill();
 
+    ctx.fill();
 }
 
-function loop(){
+function drawGameOver(){
+
+    ctx.fillStyle="rgba(0,0,0,0.75)";
+    ctx.fillRect(0,0,400,700);
+
+    ctx.fillStyle="white";
+    ctx.textAlign="center";
+
+    ctx.font="40px Arial";
+    ctx.fillText(
+        "게임 종료",
+        200,
+        250
+    );
+
+    ctx.font="26px Arial";
+    ctx.fillText(
+        "점수 : "+score,
+        200,
+        330
+    );
+
+    ctx.font="24px Arial";
+    ctx.fillText(
+        "클릭하여 다시 시작",
+        200,
+        450
+    );
+}
+
+function gameLoop(){
 
     update();
-    draw();
 
-    requestAnimationFrame(loop);
+    if(gameState==="start"){
+        drawStart();
+    }
+
+    if(gameState==="play"){
+        drawGame();
+    }
+
+    if(gameState==="gameover"){
+        drawGame();
+        drawGameOver();
+    }
+
+    requestAnimationFrame(gameLoop);
 }
 
-loop();
+gameLoop();
 
 </script>
 
