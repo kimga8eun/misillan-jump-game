@@ -160,7 +160,7 @@ button:hover{
     <div id="header">
         <h1>🌾 Trò Chơi Phát Triển Misillan 🌾</h1>
         <div id="info">
-            <div>⏰ <span id="time">20</span>s</div>
+            <div>⏰ <span id="time">10</span>s</div>
             <div>👆 <span id="count">0</span></div>
         </div>
     </div>
@@ -185,7 +185,7 @@ button:hover{
 
 <script>
 let count = 0;
-let timeLeft = 20; // 시간을 20초로 변경
+let timeLeft = 10; // 시간을 20초로 변경
 let gameOver = false;
 let timerInterval = null;
 
@@ -201,7 +201,7 @@ function updateStage(){
     let bg;
     let char;
 
-    if(count < 20){
+    if(count < 10){
         bg = "image/background1.png.png";
         char = "image/stage1.png.png";
     }else if(count < 40){
@@ -274,11 +274,11 @@ function endGame(isSuccess) {
 
 function restartGame(){
     count = 0;
-    timeLeft = 20; // 재시작 시에도 20초로 초기화
+    timeLeft = 10; // 재시작 시에도 20초로 초기화
     gameOver = false;
 
     countText.textContent = 0;
-    timeText.textContent = 20;
+    timeText.textContent = 10;
 
     message.textContent = "🔥 Cơ hội đây rồi! Hãy bấm thật nhanh liên tục!";
     message.className = "";
