@@ -172,7 +172,6 @@ button:hover{
     <div id="footer">
         <div id="message">🔥 Cơ hội đây rồi! Hãy bấm thật nhanh liên tục!</div>
         
-        <!-- QR 및 링크 표시 영역 -->
         <div id="resultArea">
             <img class="qr-code" src="image/shopeeQR.png.png" alt="Mã QR Shopee">
             <a class="shopee-link" href="https://shopee.vn" target="_blank">🛒 Khám phá Misillan trên Shopee</a>
@@ -185,7 +184,7 @@ button:hover{
 
 <script>
 let count = 0;
-let timeLeft = 10; // 시간을 20초로 변경
+let timeLeft = 10; // 시간을 10초로 변경
 let gameOver = false;
 let timerInterval = null;
 
@@ -201,7 +200,7 @@ function updateStage(){
     let bg;
     let char;
 
-    if(count < 10){
+    if(count < 20){
         bg = "image/background1.png.png";
         char = "image/stage1.png.png";
     }else if(count < 40){
@@ -274,7 +273,7 @@ function endGame(isSuccess) {
 
 function restartGame(){
     count = 0;
-    timeLeft = 10; // 재시작 시에도 20초로 초기화
+    timeLeft = 10; // 재시작 시에도 10초로 초기화
     gameOver = false;
 
     countText.textContent = 0;
