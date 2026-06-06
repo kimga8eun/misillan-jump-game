@@ -172,9 +172,8 @@ button:hover{
     <div id="footer">
         <div id="message">🔥 Cơ hội đây rồi! Hãy bấm thật nhanh liên tục!</div>
         
-        <!-- QR 및 쇼피 공식 미실란 상점 링크 영역 -->
         <div id="resultArea">
-            <img class="qr-code" src="image/shopeeQR.png.png" alt="Mã QR Shopee">
+            <img class="qr-code" src="image/shopeeQR.webp" alt="Mã QR Shopee">
             <a class="shopee-link" href="https://shopee.vn/webmastersc.vn?categoryId=100629&entryPoint=ShopByPDP&itemId=48711441822&upstream=search" target="_blank">🛒 Khám phá Misillan trên Shopee</a>
         </div>
 
@@ -188,6 +187,7 @@ let count = 0;
 let timeLeft = 10;
 let gameOver = false;
 let timerInterval = null;
+let isTimerStarted = false; // 타이머 시작 여부 확인 변수 thêm biến kiểm tra đã chạy timer chưa
 
 const countText = document.getElementById("count");
 const timeText = document.getElementById("time");
@@ -197,25 +197,26 @@ const message = document.getElementById("message");
 const resultArea = document.getElementById("resultArea");
 const restartBtn = document.getElementById("restartBtn");
 
+// Đổi đuôi .png.png thành .webp để giảm dung lượng hình ảnh khi tải trang
 function updateStage(){
     let bg;
     let char;
 
     if(count < 20){
-        bg = "image/background1.png.png";
-        char = "image/stage1.png.png";
+        bg = "image/background1.webp";
+        char = "image/stage1.webp";
     }else if(count < 40){
-        bg = "image/background2.png.png";
-        char = "image/stage2.png.png";
+        bg = "image/background2.webp";
+        char = "image/stage2.webp";
     }else if(count < 60){
-        bg = "image/background3.png.png";
-        char = "image/stage3.png.png";
+        bg = "image/background3.webp";
+        char = "image/stage3.webp";
     }else if(count < 80){
-        bg = "image/background4.png.png";
-        char = "image/stage4.png.png";
+        bg = "image/background4.webp";
+        char = "image/stage4.webp";
     }else{
-        bg = "image/background5.png.png";
-        char = "image/stage5.png.png";
+        bg = "image/background5.webp";
+        char = "image/stage5.webp";
     }
 
     mainBackground.style.backgroundImage = `url('${bg}')`;
@@ -224,6 +225,12 @@ function updateStage(){
 
 character.addEventListener("click", ()=>{
     if(gameOver) return;
+
+    // 첫 터치 시에만 타이머 bắt đầu đếm ngược ở lần chạm đầu tiên
+    if(!isTimerStarted) {
+        startTimer();
+        isTimerStarted = true;
+    }
 
     character.animate([
         {transform:"scale(1)"},
@@ -276,6 +283,7 @@ function restartGame(){
     count = 0;
     timeLeft = 10;
     gameOver = false;
+    isTimerStarted = false; // Khởi tạo lại trạng thái chờ click
 
     countText.textContent = 0;
     timeText.textContent = 10;
@@ -287,13 +295,11 @@ function restartGame(){
     restartBtn.style.display = "inline-block";
 
     updateStage();
-    clearInterval(timerInterval);
-    startTimer();
+    clearInterval(timerInterval); // Không tự động chạy startTimer() ở đây nữa
 }
 
-// 초기 실행
+// 초기 실행 (Chỉ vẽ giao diện ban đầu, không tự kích hoạt bộ đếm thời gian)
 updateStage();
-startTimer();
 </script>
 
 </body>
