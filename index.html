@@ -8,147 +8,147 @@
 
 <style>
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
 body{
-    background:#f2f2f2;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
-    font-family:sans-serif;
+    background:#f2f2f2;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    font-family:sans-serif;
 }
 
 #gameContainer{
-    width:430px;
-    height:900px;
-    background:white;
-    border-radius:25px;
-    overflow:hidden;
-    box-shadow:0 10px 30px rgba(0,0,0,.2);
-    display: flex;
-    flex-direction: column;
+    width:430px;
+    height:900px;
+    background:white;
+    border-radius:25px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+    display: flex;
+    flex-direction: column;
 }
 
 #header{
-    padding:15px;
-    background:white;
-    text-align:center;
-    border-bottom:1px solid #ddd;
+    padding:15px;
+    background:white;
+    text-align:center;
+    border-bottom:1px solid #ddd;
 }
 
 #header h1{
-    font-size:24px;
-    margin-bottom:10px;
+    font-size:24px;
+    margin-bottom:10px;
 }
 
 #info{
-    display:flex;
-    justify-content:center;
-    gap:25px;
-    font-size:20px;
-    font-weight:bold;
+    display:flex;
+    justify-content:center;
+    gap:25px;
+    font-size:20px;
+    font-weight:bold;
 }
 
 #mainBackground{
-    flex: 1;
-    background-size:cover;
-    background-position:center;
-    background-repeat:no-repeat;
+    flex: 1;
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
 
-    display:flex;
-    justify-content:center;
-    align-items:flex-end;
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
 
-    padding-bottom:15px;
-    position:relative;
+    padding-bottom:15px;
+    position:relative;
 }
 
 #character{
-    width:400px;
-    height:400px;
-    cursor:pointer;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    transition:0.08s;
+    width:400px;
+    height:400px;
+    cursor:pointer;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    transition:0.08s;
 }
 
 #character:active{
-    transform:scale(0.85);
+    transform:scale(0.85);
 }
 
 #character img{
-    width:100%;
-    height:100%;
-    object-fit:contain;
-    filter:drop-shadow(0 10px 15px rgba(0,0,0,.25));
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    filter:drop-shadow(0 10px 15px rgba(0,0,0,.25));
 }
 
 #footer{
-    padding:20px;
-    text-align:center;
-    background: white;
-    border-top: 1px solid #eee;
+    padding:20px;
+    text-align:center;
+    background: white;
+    border-top: 1px solid #eee;
 }
 
 #message{
-    font-size:22px;
-    font-weight:bold;
-    margin-bottom:15px;
-    white-space: pre-line;
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:15px;
+    white-space: pre-line;
 }
 
 /* 결과창 스타일 */
 #resultArea {
-    margin-top: 15px;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
+    margin-top: 15px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
 }
 
 .qr-code {
-    width: 150px;
-    height: 150px;
-    object-fit: contain;
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
 }
 
 .shopee-link {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #ff5722;
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    border-radius: 8px;
-    font-size: 16px;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ff5722;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+    font-size: 16px;
 }
 
 button{
-    padding:12px 35px;
-    border:none;
-    border-radius:10px;
-    background:#43a047;
-    color:white;
-    font-size:18px;
-    cursor:pointer;
-    margin-top: 10px;
+    padding:12px 35px;
+    border:none;
+    border-radius:10px;
+    background:#43a047;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+    margin-top: 10px;
 }
 
 button:hover{
-    opacity:.9;
+    opacity:.9;
 }
 
 .success{
-    color:#1b8f1b;
+    color:#1b8f1b;
 }
 
 .fail{
-    color:#e53935;
+    color:#e53935;
 }
 </style>
 </head>
@@ -157,28 +157,29 @@ button:hover{
 
 <div id="gameContainer">
 
-    <div id="header">
-        <h1>🌾 Trò Chơi Phát Triển Misillan 🌾</h1>
-        <div id="info">
-            <div>⏰ <span id="time">10</span>s</div>
-            <div>👆 <span id="count">0</span></div>
-        </div>
-    </div>
+    <div id="header">
+        <h1>🌾 Trò Chơi Phát Triển Misillan 🌾</h1>
+        <div id="info">
+            <div>⏰ <span id="time">10</span>s</div>
+            <div>👆 <span id="count">0</span></div>
+        </div>
+    </div>
 
-    <div id="mainBackground">
-        <div id="character"></div>
-    </div>
+    <div id="mainBackground">
+        <div id="character"></div>
+    </div>
 
-    <div id="footer">
-        <div id="message">🔥 Cơ hội đây rồi! Hãy bấm thật nhanh liên tục!</div>
-        
-        <div id="resultArea">
-            <img class="qr-code" src="image/shopeeQR.png.png" alt="Mã QR Shopee">
-            <a class="shopee-link" href="https://shopee.vn/webmastersc.vn?categoryId=100629&entryPoint=ShopByPDP&itemId=48711441822&upstream=search" target="_blank">🛒 Khám phá Misillan trên Shopee</a>
-        </div>
+    <div id="footer">
+        <div id="message">🔥 Cơ hội đây rồi! Hãy bấm thật nhanh liên tục!</div>
+        
+        <!-- QR 및 쇼피 공식 미실란 상점 링크 영역 -->
+        <div id="resultArea">
+            <img class="qr-code" src="image/shopeeQR.png.png" alt="Mã QR Shopee">
+            <a class="shopee-link" href="https://shopee.vn/webmastersc.vn?categoryId=100629&entryPoint=ShopByPDP&itemId=48711441822&upstream=search" target="_blank">🛒 Khám phá Misillan trên Shopee</a>
+        </div>
 
-        <button id="restartBtn" onclick="restartGame()">Chơi lại</button>
-    </div>
+        <button id="restartBtn" onclick="restartGame()">Chơi lại</button>
+    </div>
 
 </div>
 
@@ -187,7 +188,7 @@ let count = 0;
 let timeLeft = 10;
 let gameOver = false;
 let timerInterval = null;
-let isTimerStarted = false; // Biến kiểm tra bộ đếm giờ đã chạy hay chưa
+let gameStarted = false;
 
 const countText = document.getElementById("count");
 const timeText = document.getElementById("time");
@@ -197,39 +198,39 @@ const message = document.getElementById("message");
 const resultArea = document.getElementById("resultArea");
 const restartBtn = document.getElementById("restartBtn");
 
-// Giữ nguyên toàn bộ tên file gốc .png.png theo yêu cầu của bạn
 function updateStage(){
-    let bg;
-    let char;
+    let bg;
+    let char;
 
-    if(count < 20){
-        bg = "image/background1.png.png";
-        char = "image/stage1.png.png";
-    }else if(count < 40){
-        bg = "image/background2.png.png";
-        char = "image/stage2.png.png";
-    }else if(count < 60){
-        bg = "image/background3.png.png";
-        char = "image/stage3.png.png";
-    }else if(count < 80){
-        bg = "image/background4.png.png";
-        char = "image/stage4.png.png";
-    }else{
-        bg = "image/background5.png.png";
-        char = "image/stage5.png.png";
-    }
+    if(count < 20){
+        bg = "image/background1.png.png";
+        char = "image/stage1.png.png";
+    }else if(count < 40){
+        bg = "image/background2.png.png";
+        char = "image/stage2.png.png";
+    }else if(count < 60){
+        bg = "image/background3.png.png";
+        char = "image/stage3.png.png";
+    }else if(count < 80){
+        bg = "image/background4.png.png";
+        char = "image/stage4.png.png";
+    }else{
+        bg = "image/background5.png.png";
+        char = "image/stage5.png.png";
+    }
 
-    mainBackground.style.backgroundImage = `url('${bg}')`;
-    character.innerHTML = `<img src="${char}" alt="Nhân vật">`;
+    mainBackground.style.backgroundImage = `url('${bg}')`;
+    character.innerHTML = `<img src="${char}" alt="Nhân vật">`;
 }
 
 character.addEventListener("click", ()=>{
+
     if(gameOver) return;
 
-    // Chạm lần đầu tiên mới kích hoạt bộ đếm thời gian
-    if(!isTimerStarted) {
+    // 첫 터치 시 타이머 시작
+    if(!gameStarted){
+        gameStarted = true;
         startTimer();
-        isTimerStarted = true;
     }
 
     character.animate([
@@ -249,56 +250,67 @@ character.addEventListener("click", ()=>{
     }
 });
 
+    count++;
+    countText.textContent = count;
+    updateStage();
+
+    if(count >= 100){
+        endGame(true);
+    }
+});
+
 function startTimer() {
-    timerInterval = setInterval(()=>{
-        if(gameOver) return;
+    timerInterval = setInterval(()=>{
+        if(gameOver) return;
 
-        timeLeft--;
-        timeText.textContent = timeLeft;
+        timeLeft--;
+        timeText.textContent = timeLeft;
 
-        if(timeLeft <= 0){
-            endGame(false);
-        }
-    },1000);
+        if(timeLeft <= 0){
+            endGame(false);
+        }
+    },1000);
 }
 
 function endGame(isSuccess) {
-    gameOver = true;
-    clearInterval(timerInterval);
-    
-    resultArea.style.display = "flex";
+    gameOver = true;
+    clearInterval(timerInterval);
+    
+    resultArea.style.display = "flex";
 
-    if(isSuccess) {
-        message.textContent = "🎉 Tiến vào thị trường Việt Nam thành công!\nChúc mừng! Misillan đã phát triển một cách tuyệt vời.";
-        message.className = "success";
-        restartBtn.style.display = "none";
-    } else {
-        message.textContent = "💀 Hết giờ! Trò chơi kết thúc!\nHãy thử lại một lần nữa nhé!";
-        message.className = "fail";
-        restartBtn.style.display = "inline-block";
-    }
+    if(isSuccess) {
+        message.textContent = "🎉 Tiến vào thị trường Việt Nam thành công!\nChúc mừng! Misillan đã phát triển một cách tuyệt vời.";
+        message.className = "success";
+        restartBtn.style.display = "none";
+    } else {
+        message.textContent = "💀 Hết giờ! Trò chơi kết thúc!\nHãy thử lại một lần nữa nhé!";
+        message.className = "fail";
+        restartBtn.style.display = "inline-block";
+    }
 }
 
 function restartGame(){
+
+    clearInterval(timerInterval);
+
     count = 0;
     timeLeft = 10;
     gameOver = false;
-    isTimerStarted = false; // Reset lại trạng thái chờ cho lượt chơi mới
-
-    countText.textContent = 0;
-    timeText.textContent = 10;
-
-    message.textContent = "🔥 Cơ hội đây rồi! Hãy bấm thật nhanh liên tục!";
-    message.className = "";
+    gameStarted = false;
     
-    resultArea.style.display = "none";
-    restartBtn.style.display = "inline-block";
+    countText.textContent = 0;
+    timeText.textContent = 10;
 
-    updateStage();
-    clearInterval(timerInterval); // Đảm bảo xóa timer cũ, không tự chạy timer mới khi chưa click
+    message.textContent = "🔥 Cơ hội đây rồi! Hãy bấm thật nhanh liên tục!";
+    message.className = "";
+    
+    resultArea.style.display = "none";
+    restartBtn.style.display = "inline-block";
+
+    updateStage();
 }
 
-// Khởi chạy giao diện ban đầu (Không tự chạy bộ đếm giờ)
+// 초기 실행
 updateStage();
 </script>
 
