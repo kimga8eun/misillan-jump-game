@@ -188,7 +188,6 @@ let count = 0;
 let timeLeft = 10;
 let gameOver = false;
 let timerInterval = null;
-let gameStarted = false;
 
 const countText = document.getElementById("count");
 const timeText = document.getElementById("time");
@@ -224,31 +223,15 @@ function updateStage(){
 }
 
 character.addEventListener("click", ()=>{
+    if(gameOver) return;
 
-    if(gameOver) return;
-
-    // 첫 터치 시 타이머 시작
-    if(!gameStarted){
-        gameStarted = true;
-        startTimer();
-    }
-
-    character.animate([
-        {transform:"scale(1)"},
-        {transform:"scale(1.1)"},
-        {transform:"scale(1)"}
-    ], {
-        duration:100
-    });
-
-    count++;
-    countText.textContent = count;
-    updateStage();
-
-    if(count >= 100){
-        endGame(true);
-    }
-});
+    character.animate([
+        {transform:"scale(1)"},
+        {transform:"scale(1.1)"},
+        {transform:"scale(1)"}
+    ], {
+        duration:100
+    });
 
     count++;
     countText.textContent = count;
@@ -290,14 +273,10 @@ function endGame(isSuccess) {
 }
 
 function restartGame(){
+    count = 0;
+    timeLeft = 10;
+    gameOver = false;
 
-    clearInterval(timerInterval);
-
-    count = 0;
-    timeLeft = 10;
-    gameOver = false;
-    gameStarted = false;
-    
     countText.textContent = 0;
     timeText.textContent = 10;
 
@@ -308,11 +287,17 @@ function restartGame(){
     restartBtn.style.display = "inline-block";
 
     updateStage();
+    clearInterval(timerInterval);
+    startTimer();
 }
 
 // 초기 실행
 updateStage();
+startTimer();
 </script>
 
 </body>
 </html>
+
+
+한 번 터치 후 타이머 시작하도록 만들어줘, 전체 코드 수정
